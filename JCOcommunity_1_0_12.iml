@@ -7,7 +7,16 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="gestPassword" level="project" />
-    <orderEntry type="library" name="gestPassword1" level="project" />
+    <orderEntry type="library" exported="" name="gestPassword" level="project" />
+    <orderEntry type="library" exported="" name="gestPassword1" level="project" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/client_java_core/core/external_jar/Android_Beta_Autentication.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
