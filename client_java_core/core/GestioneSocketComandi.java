@@ -27,6 +27,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import bticino.GestionePassword;
+import com.bticino.openwebnet.OpenWebNetUtils;
    
 /**
  * Description:
@@ -52,10 +53,10 @@ public class GestioneSocketComandi{
 	static String responseLine = null; //stringa in ricezione dal Webserver
 	static final String socketComandi = "*99*0##";
 	static final String socketSuperComandi = "*99*9##";
-	
 	BufferedReader input = null;
 	PrintWriter output = null;  
 	OpenWebNet openWebNet = null;
+	int passint;
 	   
 	/**
 	 * Costruttore
@@ -80,7 +81,7 @@ public class GestioneSocketComandi{
 	 * @param passwordOpen Password open del webserver
 	 * @return true Se la connessione va a buon fine, false altrimenti
 	 */
-	public boolean connect(String ip, int port, long passwordOpen){ 
+	public boolean connect(String ip, int port, int passwordOpen){
 		try{
 			ClientFrame.scriviSulLog("Tentativo connessione a "+ ip +"  Port: "+ port,1,0,0);
 			socket = new Socket(ip, port);
@@ -137,7 +138,10 @@ public class GestioneSocketComandi{
 						if (ClientFrame.abilitaPass.isSelected()) {
 							//applico algoritmo di conversione
 							ClientFrame.scriviSulLog("Controllo sulla password", 1, 0, 0);
-							long risultato = gestPassword.applicaAlgoritmo(passwordOpen, responseLine);
+							//long risultato = gestPassword.applicaAlgoritmo(passwordOpen, responseLine);
+							Long seed = Long.valueOf(responseLine.substring(2, responseLine.length() - 2));
+							ClientFrame.scriviSulLog("Tx: " + "seed=" + seed, 1, 0, 0);
+							Long risultato = OpenWebNetUtils.passwordFromSeed(seed, passwordOpen);
 							ClientFrame.scriviSulLog("Tx: " + "*#" + risultato + "##", 1, 0, 0);
 							output.write("*#" + risultato + "##");
 							output.flush();
