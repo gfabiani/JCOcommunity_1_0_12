@@ -27,6 +27,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import bticino.GestionePassword;
+import com.bticino.openwebnet.OpenWebNetUtils;
 
 /**
  * Description:
@@ -65,7 +66,7 @@ public class GestioneSocketMonitor{
 	 * @param passwordOpen password open del webserver
 	 * @return true se la connessione va a buon fine, false altrimenti
 	 */
-	public boolean connect(String ip, int port, long passwordOpen){ //tipo rappresenta socket comandi o monitor
+	public boolean connect(String ip, int port, int passwordOpen){ //tipo rappresenta socket comandi o monitor
 		try {
 			ClientFrame.scriviSulLog("Mon: Tentativo connessione a "+ ip +"  Port: "+ port,1,0,0);
 			socketMon = new Socket(ip, port);
@@ -114,9 +115,13 @@ public class GestioneSocketMonitor{
 						ClientFrame.scriviSulLog("Mon: Rx: " + responseLineMon,1,0,0);						 
 						if(ClientFrame.abilitaPass.isSelected()){
 					    	//applico algoritmo di conversione
-					    	long risultato = gestPassword.applicaAlgoritmo(passwordOpen, responseLineMon);
-					    	ClientFrame.scriviSulLog("Mon: Tx: "+"*#"+risultato+"##",1,0,0);
-					    	outputMon.write("*#"+risultato+"##");
+							ClientFrame.scriviSulLog("Controllo sulla password", 1, 0, 0);
+							//long risultato = gestPassword.applicaAlgoritmo(passwordOpen, responseLine);
+							Long seed = Long.valueOf(responseLineMon.substring(2, responseLineMon.length() - 2));
+							ClientFrame.scriviSulLog("Tx: " + "seed=" + seed, 1, 0, 0);
+							Long risultato = OpenWebNetUtils.passwordFromSeed(seed, passwordOpen);
+							ClientFrame.scriviSulLog("Tx: " + "*#" + risultato + "##", 1, 0, 0);
+							outputMon.write("*#" + risultato + "##");
 					    	outputMon.flush();
 					    	statoMonitor = 2; //setto stato dopo l'autenticazione 
 				        	setTimeout(1);
@@ -130,7 +135,6 @@ public class GestioneSocketMonitor{
 			        			break;
 			        		}
 			        		else{
-
 			        			ClientFrame.scriviSulLog("Mon: Impossibile connettersi!!",0,1,1);
 				               	//se non mi connetto chiudo la socket
 				               	ClientFrame.scriviSulLog("Mon: Chiudo la socket verso il server " + ip,2,0,0);
